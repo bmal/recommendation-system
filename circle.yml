@@ -1,0 +1,3 @@
+test:
+    override:
+        ruby -w correlation_coefficient_test.rb
