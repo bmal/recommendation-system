@@ -6,71 +6,87 @@ class CorrelationCoefficient
     end
 
     def euclidean_distance(person1, person2)
-        rated = get_mutualy_rated(person1, person2)
+        objects_rated_by_both_persons = get_mutualy_rated_objects(person1, person2)
 
-        if rated.empty?
+        if objects_rated_by_both_persons.empty?
             return 0
         end
 
-        distance = Math.sqrt(rated.inject(0) { |sum, k| sum + (@prefs[person1][k] - @prefs[person2][k])**2 })
-        1/(1 + distance)
+        distance = Math.sqrt(objects_rated_by_both_persons.inject(0) do |sum, rated_object|
+            sum + (@prefs[person1][rated_object] - @prefs[person2][rated_object])**2
+        end)
+
+        normalize_euclidean_distance(distance)
     end
 
     def pearson_distance(person1, person2)
-        rated = get_mutualy_rated(person1, person2)
+        objects_rated_by_both_persons = get_mutualy_rated_objects(person1, person2)
 
-        if rated.empty?
+        if objects_rated_by_both_persons.empty?
             return 0
         end
 
-        person1_average_rating = get_average_rating(person1, rated)
-        person2_average_rating = get_average_rating(person2, rated)
+        person1_average_rating = get_average_rating(person1, objects_rated_by_both_persons)
+        person2_average_rating = get_average_rating(person2, objects_rated_by_both_persons)
 
-        covariance = rated.inject(0) do |sum, k|
-            sum + (@prefs[person1][k] - person1_average_rating)*(@prefs[person2][k] - person2_average_rating)
+        covariance = objects_rated_by_both_persons.inject(0) do |sum, rated_object|
+            sum + (@prefs[person1][rated_object] - person1_average_rating)*(@prefs[person2][rated_object] - person2_average_rating)
         end
 
-        person1_standard_deviation = get_standard_deviation(person1, person1_average_rating, rated)
-        person2_standard_deviation = get_standard_deviation(person2, person2_average_rating, rated)
+        person1_standard_deviation = get_standard_deviation(person1, person1_average_rating, objects_rated_by_both_persons)
+        person2_standard_deviation = get_standard_deviation(person2, person2_average_rating, objects_rated_by_both_persons)
 
         covariance / (person1_standard_deviation*person2_standard_deviation)
     end
 
     def tanimoto_distance(person1, person2)
-        rated = get_mutualy_rated(person1, person2)
+        objects_rated_by_both_persons = get_mutualy_rated_objects(person1, person2)
 
-        if rated.empty?
+        if objects_rated_by_both_persons.empty?
             return 0
         end
 
-#        rated.size / get_total_number_of_movies_seen_by(person1, person2)
-        number_of_identical_scores = rated.inject(0) do |sum, k|
-            sum + (@prefs[person1][k] == @prefs[person2][k] ? 1 : 0)
+#        objects_rated_by_both_persons.size / get_total_number_of_movies_seen_by(person1, person2)
+        number_of_identical_scores = objects_rated_by_both_persons.inject(0) do |sum, rated_object|
+            sum + (@prefs[person1][rated_object] == @prefs[person2][rated_object] ? 1 : 0)
         end
 
-        number_of_identical_scores / rated.size.to_f
+        number_of_identical_scores / objects_rated_by_both_persons.size.to_f
     end
 
     private
-    def get_mutualy_rated(person1, person2)
-        if @prefs.keys.include?(person1) && @prefs.keys.include?(person2)
-            @prefs[person1].keys.select { |k| @prefs[person2].has_key? k }
+    def get_mutualy_rated_objects(person1, person2)
+        if isPersonInDataset(person1) && isPersonInDataset(person2)
+            create_collection_of_objects_rated_by_both_persons(person1, person2)
         else
             []
         end
+    end
+
+    def isPersonInDataset(person)
+        @prefs.keys.include?(person)
+    end
+
+    def create_collection_of_objects_rated_by_both_persons(person1, person2)
+        @prefs[person1].keys.select { |rated_object| @prefs[person2].has_key? rated_object }
+    end
+
+    def normalize_euclidean_distance(distance)
+        1/(1 + distance)
     end
 
     def get_total_number_of_movies_seen_by(person1, person2)
         (@prefs[person1].keys | @prefs[person2].keys).size
     end
 
-    def get_average_rating(person, rated)
-        rated.inject(0) { |sum, k| sum + @prefs[person][k] } / rated.size
+    def get_average_rating(person, objects_rated_by_both_persons)
+        sum_of_scores = objects_rated_by_both_persons.inject(0) { |sum, rated_object| sum + @prefs[person][rated_object] }
+        sum_of_scores / objects_rated_by_both_persons.size
     end
 
-    def get_standard_deviation(person, average_rating, rated)
-        Math.sqrt(rated.inject(0) do |sum, k|
-            sum + (@prefs[person][k] - average_rating) ** 2
+    def get_standard_deviation(person, average_rating, objects_rated_by_both_persons)
+        Math.sqrt(objects_rated_by_both_persons.inject(0) do |sum, rated_object|
+            sum + (@prefs[person][rated_object] - average_rating) ** 2
         end)
     end
 end
