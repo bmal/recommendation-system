@@ -3,10 +3,6 @@ require_relative 'test_helper'
 require 'minitest/autorun'
 require 'minitest/ci'
 
-if ENV["CIRCLECI"]
-  Minitest::Ci.report_dir = "#{ENV["CIRCLE_TEST_REPORTS"]}/reports"
-end
-
 class EuclideanDistanceTestSuit < MiniTest::Unit::TestCase
     include TestHelper
     def setup
