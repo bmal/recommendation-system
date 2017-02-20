@@ -3,10 +3,6 @@ require_relative 'critics'
 require 'minitest/autorun'
 require 'minitest/ci'
 
-if ENV["CIRCLECI"]
-  Minitest::Ci.report_dir = "#{ENV["CIRCLE_TEST_REPORTS"]}/reports"
-end
-
 class CorrelationCoefficientTestSuit < MiniTest::Unit::TestCase
     NONEXISTING_USER_1 = "Krzesło"
     NONEXISTING_USER_2 = "Lampa"
