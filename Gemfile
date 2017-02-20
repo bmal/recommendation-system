@@ -3,4 +3,4 @@ ruby '2.3.1'
 
 gem 'minitest'
 gem 'minitest-ci'
-gem 'rake'
+gem 'rake', '~> 11.1', '>= 11.1.2'
