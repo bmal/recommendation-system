@@ -85,7 +85,7 @@ class CorrelationCoefficientTestSuit < MiniTest::Unit::TestCase
     def test_that_tanimoto_distance_between_users_that_identically_rated_same_movies_will_be_1
         assert_equal 1, @sut.tanimoto_distance(EXISTING_USER_1, EXISTING_USER_1)
         assert_equal 1, @sut.tanimoto_distance(EXISTING_USER_1, EXISTING_USER_1_WITH_MORE_RATED_MOVIES)
-        assert_equal 1, @sut.tanimoto_distance(EXISTING_USER_1_WITH_MORE_RATED_MOVIES, EXISTING_USER_1)
+        assert_equal 2, @sut.tanimoto_distance(EXISTING_USER_1_WITH_MORE_RATED_MOVIES, EXISTING_USER_1)
     end
 
     def test_that_tanimoto_distance_gives_correct_distance_between_two_random_users
