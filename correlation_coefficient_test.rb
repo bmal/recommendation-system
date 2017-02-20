@@ -1,6 +1,7 @@
 require_relative 'correlation_coefficient'
 require_relative 'critics'
 require 'minitest/autorun'
+require 'minitest/ci'
 
 class CorrelationCoefficientTestSuit < MiniTest::Unit::TestCase
     NONEXISTING_USER_1 = "Krzesło"

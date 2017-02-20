@@ -1,6 +1,0 @@
-test:
-  override:
-    - bundle exec rake test TESTOPTS="--ci-dir=$CIRCLE_TEST_REPORTS/reports":
-        parallel: true
-        files:
-          - *_test.rb
