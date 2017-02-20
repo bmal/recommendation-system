@@ -16,7 +16,7 @@ class CorrelationCoefficientTestSuit < MiniTest::Unit::TestCase
     end
 
     def test_that_when_users_have_no_mutualy_rated_movies_then_pearson_distance_will_be_0
-        assert_equal 1, @sut.pearson_distance(EXISTING_EMPTY_USER, EXISTING_USER_1)
+        assert_equal 0, @sut.pearson_distance(EXISTING_EMPTY_USER, EXISTING_USER_1)
         assert_equal 0, @sut.pearson_distance(EXISTING_USER_1, EXISTING_EMPTY_USER)
     end
 
