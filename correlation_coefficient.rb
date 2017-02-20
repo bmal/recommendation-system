@@ -1,3 +1,5 @@
+require 'abstract_method'
+
 class NoMutualyRatedObjects < StandardError
 end
 
@@ -6,6 +8,13 @@ class CorrelationCoefficient
     attr_writer :prefs
     def initialize(prefs)
         @prefs = prefs.to_h
+    end
+
+    def calculate_similarity(person1, person2)
+        objects_rated_by_both_persons = try_to_aquire_mutualy_rated_objects(person1, person2)
+        calculate_distance(person1, person2, objects_rated_by_both_persons)
+    rescue NoMutualyRatedObjects
+        return 0
     end
 
     private
@@ -27,4 +36,6 @@ class CorrelationCoefficient
     def create_collection_of_objects_rated_by_both_persons(person1, person2)
         @prefs[person1].keys.select { |rated_object| @prefs[person2].has_key? rated_object }
     end
+
+    abstract_method :calculate_distance
 end

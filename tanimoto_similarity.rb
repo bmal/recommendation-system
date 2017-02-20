@@ -1,15 +1,8 @@
 require_relative 'correlation_coefficient'
 
 class TanimotoSimilarity < CorrelationCoefficient
-    def calculate_similarity(person1, person2)
-        objects_rated_by_both_persons = try_to_aquire_mutualy_rated_objects(person1, person2)
-        calculate_tanimoto_similarity(person1, person2, objects_rated_by_both_persons)
-    rescue NoMutualyRatedObjects
-        return 0
-    end
-
     private
-    def calculate_tanimoto_similarity(person1, person2, objects_rated_by_both_persons)
+    def calculate_distance(person1, person2, objects_rated_by_both_persons)
         number_of_identical_scores = calculate_number_of_identical_scores(person1, person2, objects_rated_by_both_persons)
         number_of_identical_scores / objects_rated_by_both_persons.size.to_f
     end

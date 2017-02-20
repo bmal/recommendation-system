@@ -1,15 +1,8 @@
 require_relative 'correlation_coefficient'
 
 class PearsonCorrelationCoefficient < CorrelationCoefficient
-    def calculate_similarity(person1, person2)
-        objects_rated_by_both_persons = try_to_aquire_mutualy_rated_objects(person1, person2)
-        calculate_pearson_correlation_coefficient(person1, person2, objects_rated_by_both_persons)
-    rescue NoMutualyRatedObjects
-        return 0
-    end
-
     private
-    def calculate_pearson_correlation_coefficient(person1, person2, objects_rated_by_both_persons)
+    def calculate_distance(person1, person2, objects_rated_by_both_persons)
         person1_average_rating = calculate_average_rating(person1, objects_rated_by_both_persons)
         person2_average_rating = calculate_average_rating(person2, objects_rated_by_both_persons)
 
