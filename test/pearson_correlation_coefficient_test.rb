@@ -1,12 +1,12 @@
-require_relative '../euclidean_distance'
+require_relative '../pearson_correlation_coefficient'
 require_relative 'test_helper'
 require 'minitest/autorun'
 require 'minitest/ci'
 
-class EuclideanDistanceTestSuit < MiniTest::Test
+class PearsonCorrelationCoefficientTestSuit < MiniTest::Test
     include TestHelper
     def setup
-        @sut = EuclideanDistance.new(CRITICS)
+        @sut = PearsonCorrelationCoefficient.new(CRITICS)
     end
 
     def test_that_when_any_of_the_users_is_not_in_database_then_similarity_will_be_0
@@ -26,8 +26,13 @@ class EuclideanDistanceTestSuit < MiniTest::Test
         assert_equal 1, @sut.calculate_similarity(EXISTING_USER_1_WITH_MORE_RATED_MOVIES, EXISTING_USER_1)
     end
 
+    def test_that_similarity_between_users_that_have_shifted_movie_scores_will_be_1
+        assert_equal 1, @sut.calculate_similarity(EXISTING_USER_1, EXISTING_USER_1_WITH_SCORES_SHIFTED_BY_CONSTANT)
+        assert_equal 1, @sut.calculate_similarity(EXISTING_USER_1_WITH_SCORES_SHIFTED_BY_CONSTANT, EXISTING_USER_1)
+    end
+
     def test_that_similarity_gives_correct_distance_between_two_random_users
-        assert_in_delta 0.29429, @sut.calculate_similarity(EXISTING_USER_1, EXISTING_USER_2), 0.00001
-        assert_in_delta 0.29429, @sut.calculate_similarity(EXISTING_USER_2, EXISTING_USER_1), 0.00001
+        assert_in_delta 0.39605, @sut.calculate_similarity(EXISTING_USER_1, EXISTING_USER_2), 0.00001
+        assert_in_delta 0.39605, @sut.calculate_similarity(EXISTING_USER_2, EXISTING_USER_1), 0.00001
     end
 end
