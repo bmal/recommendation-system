@@ -9,7 +9,7 @@ class EuclideanDistanceTestSuit < MiniTest::Test
         @sut = EuclideanDistance.new(CRITICS)
     end
 
-    def test_that_when_any_of_the_users_is_not_in_database_then_similarity_will_be_0
+    def test_that_when_none_of_the_users_is_in_database_then_similarity_will_be_0
         assert_equal 0, @sut.calculate_similarity(NONEXISTING_USER_1, NONEXISTING_USER_2)
         assert_equal 0, @sut.calculate_similarity(EXISTING_USER_1, NONEXISTING_USER_1)
         assert_equal 0, @sut.calculate_similarity(NONEXISTING_USER_1, EXISTING_USER_1)
