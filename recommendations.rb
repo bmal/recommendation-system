@@ -1,30 +1,25 @@
-require_relative 'critics'
-require_relative 'correlation_coefficient'
-require_relative 'read_movie_lens'
-
 class Recommendation
     public
-    def initialize(prefs)
+    def initialize(prefs, correlation_coefficient_calculator)
         @prefs = prefs
-        @cc = CorrelationCoefficient.new(@prefs)
         recalculate_similar_movies
     end
 
-    def top_critics(person, similarity = @cc.method(:sim_pearson))
+    def top_critics(person)
         reviewers = @prefs.reject { |reviewer, _| reviewer == person }.to_h.keys
-        reviewers.map { |reviewer| [reviewer, similarity.call(person, reviewer)] }
+        reviewers.map { |reviewer| [reviewer, @correlation_coefficient_calculator.calculate_similarity(person, reviewer)] }
             .sort_by { |_, v| v }.reverse.to_h
     end
 
-    def top_similar_movies(movie, similarity = @cc.method(:sim_pearson))
+    def top_similar_movies(movie)
         transform_prefs
         critics = top_critics(movie, similarity)
         transform_prefs
         critics
     end
 
-    def get_recommendation_ranking_based_on_users(person, similarity = @cc.method(:sim_pearson))
-        valuable_critics = @prefs.select { |critic, _| critic != person && similarity.call(person, critic) > 0 }.keys
+    def get_recommendation_ranking_based_on_users(person)
+        valuable_critics = @prefs.select { |critic, _| critic != person && @correlation_coefficient_calculator.calculate_similarity(person, critic) > 0 }.keys
 
         weighted_movie_values = {}
         weighted_movie_values.default = 0
@@ -33,7 +28,7 @@ class Recommendation
         sum_of_weights_per_movie.default = 0
 
         valuable_critics.each do |critic|
-            sim = similarity.call(person, critic)
+            sim = @correlation_coefficient_calculator.calculate_similarity(person, critic)
             unseen_movies_by_person = @prefs[critic].select { |movie, _| !@prefs[person].keys.include?(movie) }
 
             unseen_movies_by_person.each do |movie, rating|
@@ -47,7 +42,7 @@ class Recommendation
             .reverse.to_h.keys
     end
 
-    def get_recommended_critics(movie, similarity = @cc.method(:sim_pearson))
+    def get_recommended_critics(movie)
         transform_prefs
         critics = get_recommendation_ranking_based_on_users(movie, similarity)
         transform_prefs
@@ -76,7 +71,7 @@ class Recommendation
         end
 
         @prefs = opinions
-        @cc.prefs = @prefs
+        @correlation_coefficient_calculator.prefs = @prefs
     end
 
     def recalculate_similar_movies
@@ -88,7 +83,7 @@ class Recommendation
                 actual += 1
                 puts "#{actual}%"
             end
-            [movie, top_similar_movies(movie, @cc.method(:sim_distance))]
+            [movie, top_similar_movies(movie, @correlation_coefficient_calculator.method(:sim_distance))]
         end.to_h
     end
 
@@ -99,23 +94,3 @@ class Recommendation
         movies
     end
 end
-
-r = Recommendation.new($critics)
-puts r.get_recommendation_ranking_based_on_users("Toby")
-puts r.top_similar_movies("Nocny słuchacz")
-puts r.get_recommended_critics("Całe szczęście")
-#puts r.get_recommendation_ranking_based_on_items("Toby")
-
-puts "-------------"
-
-prefs = get_prefs('../movielens/u.data')
-prefs["Bartek"] ={}
-prefs["Bartek"]["Taxi Driver"] = 3
-prefs["Bartek"]["Shawshank Redemption, The"] = 5
-prefs["Bartek"]["Pulp Fiction"] = 5
-prefs["Bartek"]["Shining, The"] = 4
-prefs["Bartek"]["Silence of the Lambs, The"] = 4
-prefs["Bartek"]["Ace Ventura: Pet Detective"] = 1
-r = Recommendation.new(prefs)
-p r.get_recommendation_ranking_based_on_users("Bartek").take(5)
-p r.get_recommendation_ranking_based_on_items("Bartek").take(5)
