@@ -1,4 +1,13 @@
 module TestHelper
+    MOVIES = [
+        "Kobieta w błękitnej wodzie",
+        "Węże w samolocie",
+        "Całe szczęście",
+        "Superman: Powrót",
+        "Ja, ty i on",
+        "Nocny słuchacz",
+        "Dexter"]
+
     CRITICS = {
         "Lisa Rose" => { 
             "Kobieta w błękitnej wodzie" => 2.5,
