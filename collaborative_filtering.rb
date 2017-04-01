@@ -9,23 +9,23 @@ class CollaborativeFiltering
     def calculate_reccomendations(user)
         other_similar_users = get_other_similar_users(user)
 
-        weighted_movie_values = {}
-        weighted_movie_values.default = 0
+        weighted_object_values = {}
+        weighted_object_values.default = 0
 
-        sum_of_weights_per_movie = {}
-        sum_of_weights_per_movie.default = 0
+        sum_of_weights_per_object = {}
+        sum_of_weights_per_object.default = 0
 
         other_similar_users.each do |other_user|
             sim = @correlation_coefficient_calculator.calculate_similarity(user, other_user)
-            unseen_movies_by_user = get_objects_rated_only_by_first_user(user_who_rated: other_user, user_who_did_not_rate: user)
+            unrated_object_by_user = get_objects_rated_only_by_first_user(user_who_rated: other_user, user_who_did_not_rate: user)
 
-            unseen_movies_by_user.each do |movie, rating|
-                weighted_movie_values[movie] += rating*sim
-                sum_of_weights_per_movie[movie] += sim
+            unrated_object_by_user.each do |object, rating|
+                weighted_object_values[object] += rating*sim
+                sum_of_weights_per_object[object] += sim
             end
         end
 
-        weighted_movie_values.map { |movie, value| [movie, value/sum_of_weights_per_movie[movie]] }
+        weighted_object_values.map { |object, value| [object, value/sum_of_weights_per_object[object]] }
             .sort_by { |_, rating| rating }
             .reverse.to_h
     end
