@@ -1,6 +1,6 @@
 class PercentPrinter
     def set_size(size)
-        @elems_per_one_percent = (size/100).to_i
+        @size = size
         @current_percent = -1
     end
 
@@ -9,10 +9,9 @@ class PercentPrinter
     end
 
     def print_percent(index)
-        if @elems_per_one_percent != 0 && index % @elems_per_one_percent == 0
+        if @size != 0 && index != 0 && index.to_f/@size*100 > @current_percent
             @current_percent += 1
             puts "#{@current_percent}%"
         end
     end
 end
-
