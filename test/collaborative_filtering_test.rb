@@ -36,7 +36,7 @@ class CollaborativeFilteringTestSuit < MiniTest::Test
         @correlation_coefficient_mock.expects(:calculate_similarity).returns(DISSIMILAR).at_least_once
     end
 
-    def test_that_full_list_of_reccomendations_is_calculated_correctly
+    def test_that_full_list_of_recommendations_is_calculated_correctly
         expect_one_similar_and_one_very_similar_user
 
         expected_result = {
@@ -45,12 +45,12 @@ class CollaborativeFilteringTestSuit < MiniTest::Test
             "Dexter" => 2.5,
             "Całe szczęście" => 2.0}
 
-        assert_equal expected_result, @sut.calculate_reccomendations(TESTED_USER)
+        assert_equal expected_result, @sut.calculate_recommendations(TESTED_USER)
     end
 
-    def test_that_no_reccomendation_will_be_returned_when_there_is_no_similar_users
+    def test_that_no_recommendation_will_be_returned_when_there_is_no_similar_users
         expect_no_similar_users
 
-        assert_equal({}, @sut.calculate_reccomendations(TESTED_USER))
+        assert_equal({}, @sut.calculate_recommendations(TESTED_USER))
     end
 end

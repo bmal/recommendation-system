@@ -10,7 +10,7 @@ class ContentBasedFiltering
         @objects_and_sorted_similar_objects = recalculate_objects_neighbours
     end
 
-    def calculate_reccomendations(user)
+    def calculate_recommendations(user)
         rated_objects = get_objects_rated_by_user(user)
 
         reccomended_objects_and_predicted_ratings = get_objects_unrated_by_user(user).map do |unrated_object|
@@ -22,12 +22,16 @@ class ContentBasedFiltering
                 sum + @objects_and_sorted_similar_objects[unrated_object][rated_object]*@prefs[user][rated_object]
             end
 
-            predicted_rating = object_value/(object_weight)
-            [unrated_object, predicted_rating]
+            if object_weight != 0
+                predicted_rating = object_value/(object_weight)
+                [unrated_object, predicted_rating]
+            else
+                nil
+            end
         end
         
-        positive_reccomendations = reccomended_objects_and_predicted_ratings.reject { |_, rating| rating.nan? || rating <= @similarity_threshold }
-        positive_reccomendations.sort_by { |_, rating| rating }.reverse.to_h
+        positive_recommendations = reccomended_objects_and_predicted_ratings.reject { |_, rating| rating.nil? || rating <= @similarity_threshold }
+        positive_recommendations.sort_by { |_, rating| rating }.reverse.to_h
     end
 
     private

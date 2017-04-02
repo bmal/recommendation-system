@@ -75,7 +75,7 @@ class ContentBasedFilteringTestSuit < MiniTest::Test
         @sut = ContentBasedFiltering.new(CRITICS, @correlation_coefficient_mock, PercentPrinter.new, DISSIMILAR)
     end
 
-    def test_that_full_list_of_reccomendations_is_calculated_correctly
+    def test_that_full_list_of_recommendations_is_calculated_correctly
         expect_one_similar_movie_and_one_very_similar
 
         expected_result = {
@@ -84,12 +84,12 @@ class ContentBasedFilteringTestSuit < MiniTest::Test
             "Całe szczęście" => 4.166666666666667,
             "Kobieta w błękitnej wodzie" => 4.166666666666667} 
 
-        assert_equal expected_result, @sut.calculate_reccomendations(TESTED_USER)
+        assert_equal expected_result, @sut.calculate_recommendations(TESTED_USER)
     end
 
-    def test_that_no_reccomendation_will_be_returned_when_there_is_no_similar_users
+    def test_that_no_recommendation_will_be_returned_when_there_is_no_similar_users
         expect_no_similar_movies
 
-        assert_equal({}, @sut.calculate_reccomendations(TESTED_USER))
+        assert_equal({}, @sut.calculate_recommendations(TESTED_USER))
     end
 end

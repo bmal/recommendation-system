@@ -6,7 +6,7 @@ class CollaborativeFiltering
         @similarity_threshold = similarity_threshold
     end
 
-    def calculate_reccomendations(user)
+    def calculate_recommendations(user)
         other_similar_users = get_other_similar_users(user)
 
         weighted_object_values = {}
