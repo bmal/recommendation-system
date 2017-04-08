@@ -26,7 +26,7 @@ class CrossValidation
     def each
         return @traning_and_testing_sets_for_each_fold.to_enum(:each) unless block_given?
 
-        @traning_and_testing_sets_for_each_fold.each { yield }
+        @traning_and_testing_sets_for_each_fold.each { |elem| yield(elem) }
     end
 
     private
