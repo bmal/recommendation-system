@@ -14,15 +14,15 @@ class Benchmark
             fold_results[:system_generation_time], recommendation_system  = count_time_and_perform { recommendation_system_creator.call(data_set) }
 
             users = fold[:testing_set].keys
-            users_results = users.map do |user|
+            fold_results[:calculation_results] = {}
+            users.each do |user|
                 time_of_recommendation_generation, recommendations_list = count_time_and_perform { recommendation_system.calculate_recommendations(user) }
-                { user => {
+                fold_results[:calculation_results][user] = {
                     time_of_recommendation_generation: time_of_recommendation_generation,
                     recommendations: recommendations_list,
-                    filtered_rated_objects: filtered_objects[user] }}
+                    filtered_rated_objects: filtered_objects[user] }
             end
 
-            fold_results[:calculation_results] = users_results
             results << fold_results
         end
 
