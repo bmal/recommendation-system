@@ -25,6 +25,12 @@ class ContentBasedFilteringTestSuit < MiniTest::Test
 
     def setup
         @correlation_coefficient_mock = mock
+        expect_setting_transformed_prefs
+
+        @percent_printer_mock = mock
+        @percent_printer_mock.stubs(:set_size)
+        @percent_printer_mock.stubs(:restart)
+        @percent_printer_mock.stubs(:print_percent)
     end
 
     def expect_setting_transformed_prefs
@@ -32,20 +38,16 @@ class ContentBasedFilteringTestSuit < MiniTest::Test
     end
 
     def expect_no_similar_movies
-        expect_setting_transformed_prefs
-
         MOVIES.each do |movie|
             MOVIES.each do |other_movie|
                 @correlation_coefficient_mock.stubs(:calculate_similarity).with(movie, other_movie).returns(DISSIMILAR) unless movie == other_movie
             end
         end
 
-        @sut = ContentBasedFiltering.new(CRITICS, @correlation_coefficient_mock, PercentPrinter.new, DISSIMILAR)
+        @sut = ContentBasedFiltering.new(CRITICS, @correlation_coefficient_mock, @percent_printer_mock, DISSIMILAR)
     end
 
     def expect_one_similar_movie_and_one_very_similar
-        expect_setting_transformed_prefs
-
         DISSIMILAR_MOVIES.each do |movie|
             DISSIMILAR_MOVIES.each do |other_movie|
                 @correlation_coefficient_mock.stubs(:calculate_similarity).with(movie, other_movie).returns(DISSIMILAR) unless movie == other_movie
@@ -71,8 +73,7 @@ class ContentBasedFilteringTestSuit < MiniTest::Test
         @correlation_coefficient_mock.stubs(:calculate_similarity).with(VERY_SIMILAR_MOVIE, SIMILAR_MOVIE).returns(VERY_SIMILAR)
         @correlation_coefficient_mock.stubs(:calculate_similarity).with(SIMILAR_MOVIE, VERY_SIMILAR_MOVIE).returns(VERY_SIMILAR)
 
-
-        @sut = ContentBasedFiltering.new(CRITICS, @correlation_coefficient_mock, PercentPrinter.new, DISSIMILAR)
+        @sut = ContentBasedFiltering.new(CRITICS, @correlation_coefficient_mock, @percent_printer_mock, DISSIMILAR)
     end
 
     def test_that_full_list_of_recommendations_is_calculated_correctly
