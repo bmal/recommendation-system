@@ -1,3 +1,5 @@
+require_relative 'no_such_user_exception'
+
 class CollaborativeFiltering
     public
     def initialize(prefs, correlation_coefficient_calculator, similarity_threshold = 0)
@@ -7,6 +9,10 @@ class CollaborativeFiltering
     end
 
     def calculate_recommendations(user)
+        if @prefs[user].nil?
+            raise NoSuchUserException.new("There is no user #{user}")
+        end
+
         other_similar_users = get_other_similar_users(user)
 
         weighted_object_values = {}

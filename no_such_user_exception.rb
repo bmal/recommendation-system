@@ -1,0 +1,2 @@
+class NoSuchUserException < StandardError
+end

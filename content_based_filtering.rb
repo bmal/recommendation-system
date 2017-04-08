@@ -1,3 +1,5 @@
+require_relative 'no_such_user_exception'
+
 class ContentBasedFiltering
     public
     def initialize(prefs, correlation_coefficient_calculator, percent_printer, similarity_threshold = 0)
@@ -11,6 +13,10 @@ class ContentBasedFiltering
     end
 
     def calculate_recommendations(user)
+        if @prefs[user].nil?
+            raise NoSuchUserException.new("There is no user #{user}")
+        end
+
         rated_objects = get_objects_rated_by_user(user)
 
         reccomended_objects_and_predicted_ratings = get_objects_unrated_by_user(user).map do |unrated_object|

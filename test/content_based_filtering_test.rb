@@ -92,4 +92,12 @@ class ContentBasedFilteringTestSuit < MiniTest::Test
 
         assert_equal({}, @sut.calculate_recommendations(TESTED_USER))
     end
+
+    def test_that_exception_should_be_thrown_when_there_is_no_such_user_in_dataset
+        expect_no_similar_movies
+
+        assert_raises(NoSuchUserException) do
+           @sut.calculate_recommendations(NONEXISTING_USER_1)
+        end
+    end
 end
