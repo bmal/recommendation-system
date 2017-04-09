@@ -1,10 +1,12 @@
+require_relative 'analyzer'
+
 class Benchmark
     def initialize(folds, seed: 152)
         @folds = folds
         @seed = seed
     end
 
-    def perform(removal_factor: 0.3, &recommendation_system_creator)
+    def generate_report(recommendation_system_creator:, removal_factor: 0.3)
         results = []
 
         @folds.each.with_index do |fold, index|
@@ -12,7 +14,7 @@ class Benchmark
             fold_results = {}
             data_set, filtered_objects = prepare_data_set(fold, removal_factor)
 
-            fold_results[:system_generation_time], recommendation_system  = count_time_and_perform { recommendation_system_creator.call(data_set) }
+            fold_results[:system_generation_time], recommendation_system = count_time_and_perform { recommendation_system_creator.call(data_set) }
 
             users = fold[:testing_set].keys
             fold_results[:calculation_results] = {}
@@ -27,7 +29,7 @@ class Benchmark
             results << fold_results
         end
 
-        results
+        Analyzer.new(results)
     end
 
     private

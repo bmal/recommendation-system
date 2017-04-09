@@ -13,7 +13,11 @@ class PearsonCorrelationCoefficient < CorrelationCoefficient
         person1_standard_deviation = calculate_standard_deviation(person1, person1_average_rating, objects_rated_by_both_persons)
         person2_standard_deviation = calculate_standard_deviation(person2, person2_average_rating, objects_rated_by_both_persons)
 
-        covariance / (person1_standard_deviation*person2_standard_deviation)
+        if(covariance == 0 || person1_standard_deviation == 0 || person2_standard_deviation == 0)
+            0
+        else
+            covariance / (person1_standard_deviation*person2_standard_deviation)
+        end
     end
 
     def calculate_average_rating(person, objects_rated_by_both_persons)

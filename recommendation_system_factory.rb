@@ -10,11 +10,11 @@ class RecommendationSystemFactory
         @percent_printer = percent_printer
     end
 
-    def createContentBasedFilteringSystem
+    def create_content_based_filtering_system
         ContentBasedFiltering.new(@prefs, @correlation_coefficient_calculator, @percent_printer, @similarity_threshold)
     end
 
-    def createCollaborativeFilteringSystem
+    def create_collaborative_filtering_system
         CollaborativeFiltering.new(@prefs, @correlation_coefficient_calculator, @similarity_threshold)
     end
 end

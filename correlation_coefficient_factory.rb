@@ -7,15 +7,15 @@ class CorrelationCoefficientFactory
         @prefs = prefs
     end
 
-    def createEuclideanDistance
+    def create_euclidean_distance
         EuclideanDistance.new(@prefs)
     end
 
-    def createPearsonCorrelationCoefficient
+    def create_pearson_correlation_coefficient
         PearsonCorrelationCoefficient.new(@prefs)
     end
 
-    def createTanimotoSimilarity
+    def create_tanimoto_similarity
         TanimotoSimilarity.new(@prefs)
     end
 end

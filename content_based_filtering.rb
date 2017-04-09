@@ -80,7 +80,7 @@ class ContentBasedFiltering
         objects_and_similarities = get_other_objects(object).map do |other_object|
             [other_object, @correlation_coefficient_calculator.calculate_similarity(object, other_object)]
         end
-        
+
         objects_and_similarities.sort_by { |_, rating| rating }.reverse.to_h
     end
 
