@@ -1,6 +1,5 @@
 require_relative 'recommendation_system_factory'
 require_relative 'correlation_coefficient_factory'
-require_relative 'movie_lens_100k_reader'
 require_relative 'test/test_helper'
 require_relative 'cross_validation'
 require_relative 'benchmark'
@@ -31,6 +30,7 @@ class Experimenter
         benchmark = Benchmark.new(CrossValidation.new(prefs, number_of_folds))
 
         (1...10).each do |removal_factor|
+            @logger.puts "removal_factor = #{removal_factor * 0.1}"
             reports[removal_factor * 0.1] = recommendation_system_generators.map do |name, generator|
                 [name, benchmark.generate_report(recommendation_system_creator: generator, removal_factor: removal_factor * 0.1)]
             end.to_h
@@ -72,6 +72,3 @@ class Experimenter
         recommendation_systems
     end
 end
-
-e = Experimenter.new
-p e.perform_tests_and_generate_report(number_of_folds: 2) { TestHelper::CRITICS }

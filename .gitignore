@@ -54,3 +54,4 @@ build-iPhoneSimulator/
 test/reports/*
 tags
 tags~
+*.csv

@@ -14,7 +14,12 @@ class Analyzer
     end
 
     def get_mean_square_error
-        Math.sqrt(get_sum_of_square_errors / get_number_of_predictions)
+        number_of_predictions = get_number_of_predictions
+        if number_of_predictions == 0
+            "brak predykcji"
+        else
+            Math.sqrt(get_sum_of_square_errors / get_number_of_predictions)
+        end
     end
 
     private
