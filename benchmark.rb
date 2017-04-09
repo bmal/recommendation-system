@@ -7,7 +7,8 @@ class Benchmark
     def perform(removal_factor: 0.3, &recommendation_system_creator)
         results = []
 
-        @folds.each do |fold|
+        @folds.each.with_index do |fold, index|
+            puts "FOLD #{index}"
             fold_results = {}
             data_set, filtered_objects = prepare_data_set(fold, removal_factor)
 
