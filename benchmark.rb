@@ -54,7 +54,7 @@ class Benchmark
             num_of_elements_to_remove = shuffled_ratings.size * removal_factor
 
             new_training_set[user] = shuffled_ratings[num_of_elements_to_remove...shuffled_ratings.size].to_h
-            removed_elements[user] = shuffled_ratings[0...num_of_elements_to_remove].to_h.keys
+            removed_elements[user] = shuffled_ratings[0...num_of_elements_to_remove].to_h
         end
 
         [new_training_set, removed_elements]

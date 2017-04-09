@@ -21,6 +21,7 @@ class Analyzer
     end
 
     def get_mean_square_error
+        Math.sqrt(get_sum_of_square_errors / get_number_of_predictions)
     end
 
     private
@@ -68,6 +69,28 @@ class Analyzer
 
         Math.sqrt(numerator / number_of_generations)
     end
+
+    def get_number_of_predictions
+        @results.inject(0) do |sum, fold_result|
+            sum + fold_result[:calculation_results].inject(0) do |fold_sum, (_, instance_results)|
+                fold_sum + instance_results[:filtered_rated_objects].size
+            end
+        end
+    end
+
+    def get_sum_of_square_errors
+        @results.inject(0) do |sum, fold_result|
+            sum + fold_result[:calculation_results].inject(0) do |fold_sum, (_, instance_results)|
+                fold_sum + instance_results[:filtered_rated_objects].inject(0) do |instance_sum, (predicted_object, prediction)|
+                    if instance_results[:recommendations][predicted_object].nil?
+                        instance_sum + (prediction)**2
+                    else
+                        instance_sum + (instance_results[:recommendations][predicted_object] - prediction)**2
+                    end
+                end
+            end
+        end
+    end
 end
 
 prefs = TestHelper::CRITICS #MovieLens100kReader.new.get_prefs
@@ -79,4 +102,4 @@ results = b.perform do |fold|
 end
 
 a = Analyzer.new(results)
-p a.get_time_standard_deviations
+p a.get_mean_square_error
