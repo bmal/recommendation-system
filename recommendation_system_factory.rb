@@ -3,7 +3,7 @@ require_relative 'collaborative_filtering'
 require_relative 'percent_printer'
 
 class RecommendationSystemFactory
-    def initialize(prefs, correlation_coefficient_calculator, similarity_threshold = 0, percent_printer = PercentPrinter.new)
+    def initialize(prefs, correlation_coefficient_calculator, percent_printer, similarity_threshold = 0)
         @prefs = prefs
         @correlation_coefficient_calculator = correlation_coefficient_calculator
         @similarity_threshold = similarity_threshold

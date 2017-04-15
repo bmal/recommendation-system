@@ -44,7 +44,7 @@ class ContentBasedFiltering
     def recalculate_objects_neighbours
         @percent_printer.restart
         get_all_rated_objects.map.with_index do |object, index|
-            @percent_printer.print_percent(index)
+            @percent_printer.print_percent("neighbours recalculation:", index)
             [object, get_other_objects_with_similarity_coefficient(object)]
         end.to_h
     end

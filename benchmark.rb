@@ -1,16 +1,18 @@
 require_relative 'analyzer'
+require_relative 'logger'
 
 class Benchmark
-    def initialize(folds, seed: 152)
+    def initialize(folds, seed: 152, logger: Logger.new)
         @folds = folds
         @seed = seed
+        @logger = logger
     end
 
     def generate_report(recommendation_system_creator:, removal_factor: 0.3)
         results = []
 
         @folds.each.with_index do |fold, index|
-            puts "FOLD #{index}"
+            @logger.fold = index
             fold_results = {}
             data_set, filtered_objects = prepare_data_set(fold, removal_factor)
 
