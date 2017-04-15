@@ -28,7 +28,7 @@ class Analyzer
             sum + fold_result[:system_generation_time]
         end
 
-        sum_of_times / @results.size
+        sum_of_times / @results.size.to_f
     end
 
     def get_average_recommendation_generation_time

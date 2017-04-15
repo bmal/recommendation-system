@@ -40,7 +40,7 @@ class AnalyzerTestSuite < MiniTest::Test
             }
         },
         {
-            system_generation_time: 4,
+            system_generation_time: 5,
             calculation_results: {
                 "A" => {
                     time_of_recommendation_generation: 7,
@@ -79,10 +79,11 @@ class AnalyzerTestSuite < MiniTest::Test
     end
 
     def test_that_the_average_time_of_recommendation_generation_is_calculated_correctly
-        assert_in_delta 5.75, (@sut.get_average_times)[:recommendation_generation_time], 0.01
+        assert_in_delta 5.75, @sut.get_average_times[:recommendation_generation_time], 0.01
     end
 
     def test_that_the_average_time_of_system_creation_is_calculated_correctly
+        assert_in_delta 7.5, @sut.get_average_times[:system_generation_time], 0.01
     end
 
     def test_that_the_standard_deviation_of_recommendation_generation_is_calculated_correctly

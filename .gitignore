@@ -55,3 +55,4 @@ test/reports/*
 tags
 tags~
 *.csv
+*.swp
