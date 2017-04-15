@@ -3,7 +3,7 @@ require_relative 'test_helper'
 require 'minitest/autorun'
 require 'minitest/ci'
 
-class EuclideanDistanceTestSuit < MiniTest::Test
+class EuclideanDistanceTestSuite < MiniTest::Test
     include TestHelper
     def setup
         @sut = EuclideanDistance.new(CRITICS)

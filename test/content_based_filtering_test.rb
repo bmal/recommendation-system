@@ -5,7 +5,7 @@ require 'minitest/autorun'
 require 'minitest/ci'
 require 'mocha/mini_test'
 
-class ContentBasedFilteringTestSuit < MiniTest::Test
+class ContentBasedFilteringTestSuite < MiniTest::Test
     include TestHelper
 
     TESTED_USER = "Toby"

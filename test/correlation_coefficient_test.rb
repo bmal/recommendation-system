@@ -3,7 +3,7 @@ require_relative 'test_helper'
 require 'minitest/autorun'
 require 'minitest/ci'
 
-class CorrelationCoefficientTestSuit < MiniTest::Test
+class CorrelationCoefficientTestSuite < MiniTest::Test
     include TestHelper
     def setup
         @sut = CorrelationCoefficient.new(CRITICS)

@@ -2,7 +2,7 @@ require_relative '../cross_validation'
 require 'minitest/autorun'
 require 'minitest/ci'
 
-class CrossValidationTestSuit < MiniTest::Test
+class CrossValidationTestSuite < MiniTest::Test
     PREFS = {
         1 => {
             1 => 'a',

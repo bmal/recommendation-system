@@ -4,7 +4,7 @@ require 'minitest/autorun'
 require 'minitest/ci'
 require 'mocha/mini_test'
 
-class CollaborativeFilteringTestSuit < MiniTest::Test
+class CollaborativeFilteringTestSuite < MiniTest::Test
     include TestHelper
 
     TESTED_USER = "Toby"

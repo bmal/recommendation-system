@@ -3,7 +3,7 @@ require_relative 'test_helper'
 require 'minitest/autorun'
 require 'minitest/ci'
 
-class TanimotoSimilarityTestSuit < MiniTest::Test
+class TanimotoSimilarityTestSuite < MiniTest::Test
     include TestHelper
     def setup
         @sut = TanimotoSimilarity.new(CRITICS)
