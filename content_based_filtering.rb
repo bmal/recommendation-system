@@ -12,14 +12,21 @@ class ContentBasedFiltering
         @objects_and_sorted_similar_objects = recalculate_objects_neighbours
     end
 
-    def calculate_recommendations(user)
+    def calculate_recommendations(user, n_neighbours: 50)
         if @prefs[user].nil?
             raise NoSuchUserException.new("There is no user #{user}")
         end
 
         rated_objects = get_objects_rated_by_user(user)
+        unrated_objects = get_objects_unrated_by_user(user)
 
-        reccomended_objects_and_predicted_ratings = get_objects_unrated_by_user(user).map do |unrated_object|
+        if unrated_objects.empty?
+            return {}
+        end
+
+        similar_unrated_objects = get_nearest_objects_unrated_by_user(user, n_neighbours, rated_objects)
+
+        reccomended_objects_and_predicted_ratings = similar_unrated_objects.map do |unrated_object|
             object_weight = rated_objects.inject(0) do |sum, rated_object|
                 sum + @objects_and_sorted_similar_objects[unrated_object][rated_object]
             end
@@ -32,12 +39,11 @@ class ContentBasedFiltering
                 predicted_rating = object_value/(object_weight)
                 [unrated_object, predicted_rating]
             else
-                nil
+                next 
             end
         end
         
-        positive_recommendations = reccomended_objects_and_predicted_ratings.reject { |_, rating| rating.nil? || rating <= @similarity_threshold }
-        positive_recommendations.sort_by { |_, rating| rating }.reverse.to_h
+        reccomended_objects_and_predicted_ratings.compact.sort_by { |_, rating| rating }.reverse.to_h
     end
 
     private
@@ -90,6 +96,12 @@ class ContentBasedFiltering
 
     def get_objects_unrated_by_user(user)
         get_all_rated_objects.reject { |object| @prefs[user].has_key? object }
+    end
+
+    def get_nearest_objects_unrated_by_user(user, n_neighbours, rated_objects)
+        rated_objects.map do |rated_object|
+            @objects_and_sorted_similar_objects[rated_object].take(n_neighbours).to_h.keys
+        end.flatten.uniq.reject { |object| rated_objects.include? object }
     end
 
     def get_objects_rated_by_user(user)

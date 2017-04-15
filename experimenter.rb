@@ -11,8 +11,8 @@ class Experimenter
 
     def initialize(logger: Logger.new,
                    correlation_coefficient_factory_creator: Proc.new { |prefs| CorrelationCoefficientFactory.new(prefs) },
-                   recommendation_system_factory_creator: Proc.new do |prefs, correlation_coefficient_calculator, logger|
-                       RecommendationSystemFactory.new(prefs, correlation_coefficient_calculator, logger)
+                   recommendation_system_factory_creator: Proc.new do |prefs, correlation_coefficient_calculator, percent_printer|
+                       RecommendationSystemFactory.new(prefs, correlation_coefficient_calculator, percent_printer)
                    end)
         @logger = logger
         @correlation_coefficient_factory_creator = correlation_coefficient_factory_creator

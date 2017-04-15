@@ -1,25 +1,44 @@
 class Analyzer
-    def initialize(results)
+    ALL_NEIGHBOURS = ["all"]
+    def initialize(results, n_neighbours: ALL_NEIGHBOURS)
         @results = results
+        @n_neighbours = n_neighbours
     end
 
     def get_average_times
-        {system_generation_time: get_average_system_generation_time,
-         recommendation_generation_time: get_average_recommendation_generation_time}
+        result = {}
+        result[:system_generation_time] = get_average_system_generation_time
+        result[:recommendation_generation_time] = {}
+        @n_neighbours.each do |n|
+            result[:recommendation_generation_time][n] = get_average_recommendation_generation_time(n)
+        end
+
+        result
     end
 
     def get_time_standard_deviations
-        {system_generation_time: get_system_generation_time_standard_deviation,
-         recommendation_generation_time: get_recommendation_generation_time_standard_deviation}
+        result = {}
+        result[:system_generation_time] = get_system_generation_time_standard_deviation
+        result[:recommendation_generation_time] = {}
+        @n_neighbours.each do |n|
+            result[:recommendation_generation_time][n] = get_recommendation_generation_time_standard_deviation(n)
+        end
+
+        result
     end
 
     def get_mean_square_error
-        number_of_predictions = get_number_of_predictions
-        if number_of_predictions == 0
-            "brak predykcji"
-        else
-            Math.sqrt(get_sum_of_square_errors / number_of_predictions.to_f)
+        result = {}
+        @n_neighbours.each do |n|
+            number_of_predictions = get_number_of_predictions(n)
+            if number_of_predictions == 0
+                result[n] = "brak predykcji"
+            else
+                result[n] = Math.sqrt(get_sum_of_square_errors(n) / number_of_predictions.to_f)
+            end
         end
+
+        result
     end
 
     private
@@ -31,14 +50,14 @@ class Analyzer
         sum_of_times / @results.size.to_f
     end
 
-    def get_average_recommendation_generation_time
+    def get_average_recommendation_generation_time(n)
         sum_of_times = @results.inject(0) do |sum, fold_result|
-            sum + fold_result[:calculation_results].values.inject(0) do |fold_sum, user_results|
+            sum + fold_result[n][:calculation_results].values.inject(0) do |fold_sum, user_results|
                 fold_sum + user_results[:time_of_recommendation_generation]
             end
         end
 
-        sum_of_times / get_number_of_generations.to_f
+        sum_of_times / get_number_of_generations(n).to_f
     end
 
     def get_system_generation_time_standard_deviation
@@ -50,20 +69,20 @@ class Analyzer
         Math.sqrt(numerator / (@results.size.to_f - 1))
     end
 
-    def get_recommendation_generation_time_standard_deviation
-        average_recommendation_generation_time = get_average_recommendation_generation_time
+    def get_recommendation_generation_time_standard_deviation(n)
+        average_recommendation_generation_time = get_average_recommendation_generation_time(n)
         numerator = @results.inject(0) do |sum, fold_result|
-            sum + fold_result[:calculation_results].values.inject(0) do |fold_sum, user_results|
+            sum + fold_result[n][:calculation_results].values.inject(0) do |fold_sum, user_results|
                 fold_sum + (user_results[:time_of_recommendation_generation] - average_recommendation_generation_time)**2
             end
         end
 
-        Math.sqrt(numerator / (get_number_of_generations.to_f - 1))
+        Math.sqrt(numerator / (get_number_of_generations(n).to_f - 1))
     end
 
-    def get_number_of_predictions
+    def get_number_of_predictions(n)
         @results.inject(0) do |sum, fold_result|
-            sum + fold_result[:calculation_results].inject(0) do |fold_sum, (_, user_results)|
+            sum + fold_result[n][:calculation_results].inject(0) do |fold_sum, (_, user_results)|
                 fold_sum + user_results[:filtered_rated_objects].inject(0) do |user_sum, (rated_object, _)|
                     if user_results[:recommendations][rated_object].nil?
                         user_sum
@@ -75,9 +94,9 @@ class Analyzer
         end
     end
 
-    def get_sum_of_square_errors
+    def get_sum_of_square_errors(n)
         @results.inject(0) do |sum, fold_result|
-            sum + fold_result[:calculation_results].inject(0) do |fold_sum, (_, user_results)|
+            sum + fold_result[n][:calculation_results].inject(0) do |fold_sum, (_, user_results)|
                 fold_sum + user_results[:filtered_rated_objects].inject(0) do |user_sum, (rated_object, rate)|
                     if user_results[:recommendations][rated_object].nil?
                         user_sum
@@ -89,9 +108,9 @@ class Analyzer
         end
     end
 
-    def get_number_of_generations
+    def get_number_of_generations(n)
         @results.inject(0) do |sum, fold_result|
-            sum + fold_result[:calculation_results].size
+            sum + fold_result[n][:calculation_results].size
         end
     end
 end
