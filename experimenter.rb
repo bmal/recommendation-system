@@ -10,11 +10,13 @@ class Experimenter
     DUMMY_DATA = TestHelper::CRITICS
 
     def initialize(logger: Logger.new,
+                   n_neighbours: [5, 25, 125, 625],
                    correlation_coefficient_factory_creator: Proc.new { |prefs| CorrelationCoefficientFactory.new(prefs) },
                    recommendation_system_factory_creator: Proc.new do |prefs, correlation_coefficient_calculator, percent_printer|
                        RecommendationSystemFactory.new(prefs, correlation_coefficient_calculator, percent_printer)
                    end)
         @logger = logger
+        @n_neighbours = n_neighbours
         @correlation_coefficient_factory_creator = correlation_coefficient_factory_creator
         @recommendation_system_factory_creator = recommendation_system_factory_creator
     end
@@ -30,19 +32,14 @@ class Experimenter
 
         benchmark = Benchmark.new(CrossValidation.new(prefs, number_of_folds), logger: @logger)
 
-        (1...10).each do |removal_factor|
-            if removal_factor.odd?
-                @logger.removal_factor = removal_factor * 0.1
-                reports[removal_factor * 0.1] = recommendation_system_generators.map do |name, generator|
-                    if /^content/ === name
-                        [name, benchmark.generate_report(recommendation_system_creator: {generator: generator, system_name: name},
-                                                        removal_factor: removal_factor * 0.1,
-                                                        n_neighbours: [5, 25, 125, 625])]
-                    else
-                        [name, benchmark.generate_report(recommendation_system_creator:
-                                                        {generator: generator, system_name: name},
-                                                        removal_factor: removal_factor * 0.1)]
-                    end
+        (1...10).each do |removal_efficient|
+            if removal_efficient.odd?
+                removal_factor = removal_efficient * 0.1
+                @logger.removal_factor = removal_factor
+                reports[removal_factor] = recommendation_system_generators.map do |name, generator|
+                    [name, benchmark.generate_report(recommendation_system_creator: generator,
+                                                    removal_factor: removal_factor,
+                                                    n_neighbours: @n_neighbours)]
                 end.to_h
             end
         end

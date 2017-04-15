@@ -36,7 +36,7 @@ class CsvPrinter
 end
 
 e = Experimenter.new
-report = e.perform_tests_and_generate_report(number_of_folds: 2) { TestHelper::CRITICS }
+report = e.perform_tests_and_generate_report(number_of_folds: 10) { TestHelper::CRITICS }
 
 printer = CsvPrinter.new
 printer.print_report("test.csv", report)

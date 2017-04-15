@@ -1,5 +1,6 @@
 require_relative 'analyzer'
 require_relative 'logger'
+require_relative 'content_based_filtering'
 
 class Benchmark
     def initialize(folds, seed: 152, logger: Logger.new)
@@ -16,16 +17,19 @@ class Benchmark
             fold_results = {}
             data_set, filtered_objects = prepare_data_set(fold, removal_factor)
 
-            fold_results[:system_generation_time], recommendation_system = count_time_and_perform { recommendation_system_creator[:generator].call(data_set) }
+            fold_results[:system_generation_time], recommendation_system = count_time_and_perform { recommendation_system_creator.call(data_set) }
 
             users = fold[:testing_set].keys
+            unless recommendation_system.is_a? ContentBasedFiltering
+                n_neighbours = Analyzer::ALL_NEIGHBOURS
+            end
 
             n_neighbours.each do |n|
                 fold_results[n] = {}
                 fold_results[n][:calculation_results] = {}
 
                 users.each do |user|
-                    if /^content_/ === recommendation_system_creator[:system_name]
+                    if recommendation_system.is_a? ContentBasedFiltering
                         time_of_recommendation_generation, recommendations_list = count_time_and_perform do
                             recommendation_system.calculate_recommendations(user, n_neighbours: n)
                         end
