@@ -32,16 +32,17 @@ class Analyzer
     end
 
     def get_average_recommendation_generation_time
-        sum_of_times = @results.inject(0) do |sum, fold_result|
-            sum_of_fold_times = fold_result[:calculation_results].values.inject(0) do |fold_sum, instance_results|
-                fold_sum + instance_results[:time_of_recommendation_generation]
-            end
-
-            average_fold_time = sum_of_fold_times / fold_result.size
-            sum + average_fold_time
+        number_of_generations = @results.inject(0) do |sum, fold_result|
+            sum + fold_result[:calculation_results].size
         end
 
-        sum_of_times / @results.size
+        sum_of_times = @results.inject(0) do |sum, fold_result|
+            sum + fold_result[:calculation_results].values.inject(0) do |fold_sum, user_results|
+                fold_sum + user_results[:time_of_recommendation_generation]
+            end
+        end
+
+        sum_of_times / number_of_generations.to_f
     end
 
     def get_system_generation_time_standard_deviation
