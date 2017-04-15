@@ -18,7 +18,7 @@ class Analyzer
         if number_of_predictions == 0
             "brak predykcji"
         else
-            Math.sqrt(get_sum_of_square_errors / get_number_of_predictions)
+            Math.sqrt(get_sum_of_square_errors / number_of_predictions.to_f)
         end
     end
 
@@ -53,8 +53,8 @@ class Analyzer
     def get_recommendation_generation_time_standard_deviation
         average_recommendation_generation_time = get_average_recommendation_generation_time
         numerator = @results.inject(0) do |sum, fold_result|
-            sum + fold_result[:calculation_results].values.inject(0) do |fold_sum, instance_results|
-                fold_sum + (instance_results[:time_of_recommendation_generation] - average_recommendation_generation_time)**2
+            sum + fold_result[:calculation_results].values.inject(0) do |fold_sum, user_results|
+                fold_sum + (user_results[:time_of_recommendation_generation] - average_recommendation_generation_time)**2
             end
         end
 
@@ -63,20 +63,26 @@ class Analyzer
 
     def get_number_of_predictions
         @results.inject(0) do |sum, fold_result|
-            sum + fold_result[:calculation_results].inject(0) do |fold_sum, (_, instance_results)|
-                fold_sum + instance_results[:filtered_rated_objects].size
+            sum + fold_result[:calculation_results].inject(0) do |fold_sum, (_, user_results)|
+                fold_sum + user_results[:filtered_rated_objects].inject(0) do |user_sum, (rated_object, _)|
+                    if user_results[:recommendations][rated_object].nil?
+                        user_sum
+                    else
+                        user_sum + 1
+                    end
+                end
             end
         end
     end
 
     def get_sum_of_square_errors
         @results.inject(0) do |sum, fold_result|
-            sum + fold_result[:calculation_results].inject(0) do |fold_sum, (_, instance_results)|
-                fold_sum + instance_results[:filtered_rated_objects].inject(0) do |instance_sum, (predicted_object, prediction)|
-                    if instance_results[:recommendations][predicted_object].nil?
-                        instance_sum + (prediction)**2
+            sum + fold_result[:calculation_results].inject(0) do |fold_sum, (_, user_results)|
+                fold_sum + user_results[:filtered_rated_objects].inject(0) do |user_sum, (rated_object, rate)|
+                    if user_results[:recommendations][rated_object].nil?
+                        user_sum
                     else
-                        instance_sum + (instance_results[:recommendations][predicted_object] - prediction)**2
+                        user_sum + (user_results[:recommendations][rated_object] - rate)**2
                     end
                 end
             end

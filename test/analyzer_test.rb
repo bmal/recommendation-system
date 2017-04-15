@@ -79,15 +79,15 @@ class AnalyzerTestSuite < MiniTest::Test
     end
 
     def test_that_the_average_time_of_recommendation_generation_is_calculated_correctly
-        assert_in_delta 5.75, @sut.get_average_times[:recommendation_generation_time], 0.01
+        assert_in_delta 5.75, @sut.get_average_times[:recommendation_generation_time], 0.00001
     end
 
     def test_that_the_average_time_of_system_creation_is_calculated_correctly
-        assert_in_delta 7.5, @sut.get_average_times[:system_generation_time], 0.01
+        assert_in_delta 7.5, @sut.get_average_times[:system_generation_time], 0.00001
     end
 
     def test_that_the_standard_deviation_of_recommendation_generation_is_calculated_correctly
-        assert_in_delta 1.5, @sut.get_time_standard_deviations[:recommendation_generation_time], 0.01
+        assert_in_delta 1.5, @sut.get_time_standard_deviations[:recommendation_generation_time], 0.00001
     end
 
     def test_that_the_standard_deviation_of_system_creation_is_calculated_correctly
@@ -95,5 +95,6 @@ class AnalyzerTestSuite < MiniTest::Test
     end
 
     def test_that_the_mean_square_error_is_calculated_correctly
+        assert_in_delta 1.832250763, @sut.get_mean_square_error, 0.000000001
     end
 end
