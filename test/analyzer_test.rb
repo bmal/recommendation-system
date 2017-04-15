@@ -87,9 +87,11 @@ class AnalyzerTestSuite < MiniTest::Test
     end
 
     def test_that_the_standard_deviation_of_recommendation_generation_is_calculated_correctly
+        assert_in_delta 1.5, @sut.get_time_standard_deviations[:recommendation_generation_time], 0.01
     end
 
     def test_that_the_standard_deviation_of_system_creation_is_calculated_correctly
+        assert_in_delta 3.53553, @sut.get_time_standard_deviations[:system_generation_time], 0.00001
     end
 
     def test_that_the_mean_square_error_is_calculated_correctly
