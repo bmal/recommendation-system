@@ -26,9 +26,13 @@ class Benchmark
 
                 users.each do |user|
                     if /^content_/ === recommendation_system_creator[:system_name]
-                        time_of_recommendation_generation, recommendations_list = count_time_and_perform { recommendation_system.calculate_recommendations(user, n_neighbours: n) }
+                        time_of_recommendation_generation, recommendations_list = count_time_and_perform do
+                            recommendation_system.calculate_recommendations(user, n_neighbours: n)
+                        end
                     else
-                        time_of_recommendation_generation, recommendations_list = count_time_and_perform { recommendation_system.calculate_recommendations(user) }
+                        time_of_recommendation_generation, recommendations_list = count_time_and_perform do
+                            recommendation_system.calculate_recommendations(user)
+                        end
                     end
 
                     fold_results[n][:calculation_results][user] = {
