@@ -31,10 +31,20 @@ class Experimenter
         benchmark = Benchmark.new(CrossValidation.new(prefs, number_of_folds), logger: @logger)
 
         (1...10).each do |removal_factor|
-            @logger.removal_factor = removal_factor * 0.1
-            reports[removal_factor * 0.1] = recommendation_system_generators.map do |name, generator|
-                [name, benchmark.generate_report(recommendation_system_creator: generator, removal_factor: removal_factor * 0.1)]
-            end.to_h
+            if removal_factor.odd?
+                @logger.removal_factor = removal_factor * 0.1
+                reports[removal_factor * 0.1] = recommendation_system_generators.map do |name, generator|
+                    if /^content/ === name
+                        [name, benchmark.generate_report(recommendation_system_creator: {generator: generator, system_name: name},
+                                                        removal_factor: removal_factor * 0.1,
+                                                        n_neighbours: [5, 25, 125, 625])]
+                    else
+                        [name, benchmark.generate_report(recommendation_system_creator:
+                                                        {generator: generator, system_name: name},
+                                                        removal_factor: removal_factor * 0.1)]
+                    end
+                end.to_h
+            end
         end
 
         reports

@@ -8,7 +8,7 @@ class Benchmark
         @logger = logger
     end
 
-    def generate_report(recommendation_system_creator:, removal_factor: 0.3)
+    def generate_report(recommendation_system_creator:, removal_factor:, n_neighbours: Analyzer::ALL_NEIGHBOURS)
         results = []
 
         @folds.each.with_index do |fold, index|
@@ -16,22 +16,32 @@ class Benchmark
             fold_results = {}
             data_set, filtered_objects = prepare_data_set(fold, removal_factor)
 
-            fold_results[:system_generation_time], recommendation_system = count_time_and_perform { recommendation_system_creator.call(data_set) }
+            fold_results[:system_generation_time], recommendation_system = count_time_and_perform { recommendation_system_creator[:generator].call(data_set) }
 
             users = fold[:testing_set].keys
-            fold_results[:calculation_results] = {}
-            users.each do |user|
-                time_of_recommendation_generation, recommendations_list = count_time_and_perform { recommendation_system.calculate_recommendations(user) }
-                fold_results[:calculation_results][user] = {
-                    time_of_recommendation_generation: time_of_recommendation_generation,
-                    recommendations: recommendations_list,
-                    filtered_rated_objects: filtered_objects[user] }
+
+            n_neighbours.each do |n|
+                fold_results[n] = {}
+                fold_results[n][:calculation_results] = {}
+
+                users.each do |user|
+                    if /^content_/ === recommendation_system_creator[:system_name]
+                        time_of_recommendation_generation, recommendations_list = count_time_and_perform { recommendation_system.calculate_recommendations(user, n_neighbours: n) }
+                    else
+                        time_of_recommendation_generation, recommendations_list = count_time_and_perform { recommendation_system.calculate_recommendations(user) }
+                    end
+
+                    fold_results[n][:calculation_results][user] = {
+                        time_of_recommendation_generation: time_of_recommendation_generation,
+                        recommendations: recommendations_list,
+                        filtered_rated_objects: filtered_objects[user] }
+                end
             end
 
             results << fold_results
         end
 
-        Analyzer.new(results)
+        Analyzer.new(results, n_neighbours: n_neighbours)
     end
 
     private
