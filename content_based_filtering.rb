@@ -13,37 +13,34 @@ class ContentBasedFiltering
     end
 
     def calculate_recommendations(user, n_neighbours: 50)
-        if @prefs[user].nil?
+        rated_objects = @prefs[user]
+
+        if rated_objects.nil?
             raise NoSuchUserException.new("There is no user #{user}")
         end
 
-        rated_objects = get_objects_rated_by_user(user)
-        unrated_objects = get_objects_unrated_by_user(user)
+        scores = {}
+        scores.default = 0
+        similarities = {}
+        similarities.default = 0
 
-        if unrated_objects.empty?
-            return {}
-        end
+        rated_objects.each do |(rated_object, rating)|
+            @objects_and_sorted_similar_objects[rated_object].take(n_neighbours).each do |(similar_object, similarity)|
+            if rated_objects.include? similar_object
+                    next
+                end
 
-        similar_unrated_objects = get_nearest_objects_unrated_by_user(user, n_neighbours, rated_objects)
-
-        reccomended_objects_and_predicted_ratings = similar_unrated_objects.map do |unrated_object|
-            object_weight = rated_objects.inject(0) do |sum, rated_object|
-                sum + @objects_and_sorted_similar_objects[unrated_object][rated_object]
-            end
-
-            object_value = rated_objects.inject(0) do |sum, rated_object|
-                sum + @objects_and_sorted_similar_objects[unrated_object][rated_object]*@prefs[user][rated_object]
-            end
-
-            if object_weight != 0
-                predicted_rating = object_value/(object_weight)
-                [unrated_object, predicted_rating]
-            else
-                next 
+                scores[similar_object] += similarity * rating
+                similarities[similar_object] += similarity
             end
         end
-        
-        reccomended_objects_and_predicted_ratings.compact.sort_by { |_, rating| rating }.reverse.to_h
+
+        recommendations = {}
+        scores.each do |(object, score)|
+            recommendations[object] = score/similarities[object].to_f
+        end
+
+        recommendations.reject { |_, rating| rating.nan? }.sort_by { |(_, rating)| rating }.reverse.to_h
     end
 
     private
@@ -92,19 +89,5 @@ class ContentBasedFiltering
 
     def get_other_objects(object)
         @prefs.reject { |other_object, _| other_object == object }.to_h.keys
-    end
-
-    def get_objects_unrated_by_user(user)
-        get_all_rated_objects.reject { |object| @prefs[user].has_key? object }
-    end
-
-    def get_nearest_objects_unrated_by_user(user, n_neighbours, rated_objects)
-        rated_objects.map do |rated_object|
-            @objects_and_sorted_similar_objects[rated_object].take(n_neighbours).to_h.keys
-        end.flatten.uniq.reject { |object| rated_objects.include? object }
-    end
-
-    def get_objects_rated_by_user(user)
-        @prefs[user].keys
     end
 end

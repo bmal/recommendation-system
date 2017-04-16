@@ -16,7 +16,7 @@ class PearsonCorrelationCoefficient < CorrelationCoefficient
         if(covariance == 0 || person1_standard_deviation == 0 || person2_standard_deviation == 0)
             0
         else
-            covariance / (person1_standard_deviation*person2_standard_deviation)
+            (1 + (covariance / (person1_standard_deviation*person2_standard_deviation)))/2
         end
     end
 

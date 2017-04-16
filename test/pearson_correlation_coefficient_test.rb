@@ -32,7 +32,7 @@ class PearsonCorrelationCoefficientTestSuite < MiniTest::Test
     end
 
     def test_that_similarity_gives_correct_distance_between_two_random_users
-        assert_in_delta 0.39605, @sut.calculate_similarity(EXISTING_USER_1, EXISTING_USER_2), 0.00001
-        assert_in_delta 0.39605, @sut.calculate_similarity(EXISTING_USER_2, EXISTING_USER_1), 0.00001
+        assert_in_delta 0.69802, @sut.calculate_similarity(EXISTING_USER_1, EXISTING_USER_2), 0.00001
+        assert_in_delta 0.69802, @sut.calculate_similarity(EXISTING_USER_2, EXISTING_USER_1), 0.00001
     end
 end
