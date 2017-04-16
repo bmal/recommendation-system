@@ -2,13 +2,11 @@ require_relative 'no_such_user_exception'
 
 class ContentBasedFiltering
     public
-    def initialize(prefs, correlation_coefficient_calculator, percent_printer, similarity_threshold = 0)
+    def initialize(prefs, correlation_coefficient_calculator, similarity_threshold = 0)
         @prefs = prefs
         @correlation_coefficient_calculator = correlation_coefficient_calculator
-        @percent_printer = percent_printer
         @similarity_threshold = similarity_threshold
 
-        @percent_printer.set_size(get_all_rated_objects.size)
         @objects_and_sorted_similar_objects = recalculate_objects_neighbours
     end
 
@@ -26,7 +24,7 @@ class ContentBasedFiltering
 
         rated_objects.each do |(rated_object, rating)|
             @objects_and_sorted_similar_objects[rated_object].take(n_neighbours).each do |(similar_object, similarity)|
-            if rated_objects.include? similar_object
+                if rated_objects.include? similar_object
                     next
                 end
 
@@ -45,9 +43,7 @@ class ContentBasedFiltering
 
     private
     def recalculate_objects_neighbours
-        @percent_printer.restart
         get_all_rated_objects.map.with_index do |object, index|
-            @percent_printer.print_percent("neighbours recalculation:", index)
             [object, get_other_objects_with_similarity_coefficient(object)]
         end.to_h
     end

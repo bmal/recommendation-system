@@ -1,5 +1,4 @@
 require_relative '../content_based_filtering'
-require_relative '../percent_printer'
 require_relative 'test_helper'
 require 'minitest/autorun'
 require 'minitest/ci'
@@ -26,11 +25,6 @@ class ContentBasedFilteringTestSuite < MiniTest::Test
     def setup
         @correlation_coefficient_mock = mock
         expect_setting_transformed_prefs
-
-        @percent_printer_mock = mock
-        @percent_printer_mock.stubs(:set_size)
-        @percent_printer_mock.stubs(:restart)
-        @percent_printer_mock.stubs(:print_percent)
     end
 
     def expect_setting_transformed_prefs
@@ -44,7 +38,7 @@ class ContentBasedFilteringTestSuite < MiniTest::Test
             end
         end
 
-        @sut = ContentBasedFiltering.new(CRITICS, @correlation_coefficient_mock, @percent_printer_mock, DISSIMILAR)
+        @sut = ContentBasedFiltering.new(CRITICS, @correlation_coefficient_mock, DISSIMILAR)
     end
 
     def expect_one_similar_movie_and_one_very_similar
@@ -73,7 +67,7 @@ class ContentBasedFilteringTestSuite < MiniTest::Test
         @correlation_coefficient_mock.stubs(:calculate_similarity).with(VERY_SIMILAR_MOVIE, SIMILAR_MOVIE).returns(VERY_SIMILAR)
         @correlation_coefficient_mock.stubs(:calculate_similarity).with(SIMILAR_MOVIE, VERY_SIMILAR_MOVIE).returns(VERY_SIMILAR)
 
-        @sut = ContentBasedFiltering.new(CRITICS, @correlation_coefficient_mock, @percent_printer_mock, DISSIMILAR)
+        @sut = ContentBasedFiltering.new(CRITICS, @correlation_coefficient_mock, DISSIMILAR)
     end
 
     def test_that_full_list_of_recommendations_is_calculated_correctly
