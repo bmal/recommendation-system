@@ -16,7 +16,7 @@ class PearsonCorrelationCoefficient < CorrelationCoefficient
         if(covariance == 0 || person1_standard_deviation == 0 || person2_standard_deviation == 0)
             0
         else
-            (1 + (covariance / (person1_standard_deviation*person2_standard_deviation)))/2
+            normalize(covariance / (person1_standard_deviation * person2_standard_deviation))
         end
     end
 
@@ -29,5 +29,9 @@ class PearsonCorrelationCoefficient < CorrelationCoefficient
         Math.sqrt(objects_rated_by_both_persons.inject(0) do |sum, rated_object|
             sum + (@prefs[person][rated_object] - average_rating) ** 2
         end)
+    end
+
+    def normalize(similarity)
+        (1 + similarity)/2
     end
 end
