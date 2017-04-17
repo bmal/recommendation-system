@@ -1,15 +1,15 @@
 require 'httparty'
 require 'zip'
 
-# liczba ocen: 1000000
-# liczba ocenianych obiektów: 9000
-# liczba użytkowników: 700
-# gęstość: 15.87%
+# liczba ocen: 10000209
+# liczba ocenianych obiektów: 3883
+# liczba użytkowników: 6040
+# gęstość: 4.26%
 
-class MovieLens100kReader
-    LINK = 'http://files.grouplens.org/datasets/movielens/ml-100k.zip'
-    ITEM_NAMES_FILE = 'ml-100k/u.item'
-    DATA_FILE = 'ml-100k/u.data'
+class MovieLens1mReader
+    LINK = 'http://files.grouplens.org/datasets/movielens/ml-1m.zip'
+    ITEM_NAMES_FILE = 'ml-1m/movies.dat'
+    DATA_FILE = 'ml-1m/ratings.dat'
 
     public
     def initialize
@@ -30,7 +30,7 @@ class MovieLens100kReader
                 if entry.name == ITEM_NAMES_FILE
                     entry.get_input_stream.read.each_line do |line|
                         line.scrub!
-                        id, name = /(\d+)\|([\w,\s]+)/.match(line).captures
+                        id, name = /(\d+)::(\S+?[\w\s]+)/.match(line).captures
                         mappings[id] = name.strip
                     end
                 end
@@ -47,7 +47,7 @@ class MovieLens100kReader
             while entry = zip_file.get_next_entry
                 if entry.name == DATA_FILE
                     entry.get_input_stream.read.each_line do |line|
-                        user, movie_id, rating = /(\d+)\s+(\d+)\s+(\w+)/.match(line).captures
+                        user, movie_id, rating = /(\d+)::(\d+)::(\w+)/.match(line).captures
                         prefs[user] ||= {}
                         prefs[user][movie_ids_to_names[movie_id]] = rating.to_i
                     end

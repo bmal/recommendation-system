@@ -3,6 +3,11 @@ require 'zip'
 require 'roo'
 require 'roo-xls'
 
+# liczba ocen: 1810455
+# liczba ocenianych obiektów: 100
+# liczba użytkowników: 24984
+# gęstość: 72.46%
+
 class JesterReader
     LINK = 'http://www.ieor.berkeley.edu/~goldberg/jester-data/jester-data-1.zip'
     TMP_XLS_FILE = 'jester_tmp.xls'
