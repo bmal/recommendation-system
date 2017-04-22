@@ -30,7 +30,6 @@ class JesterReader
                     end
 
                     data_file = Roo::Excel.new("jester.xls")
-                    data_sheet = data_file.sheet(data_file.sheets.first)
                     data_file.each.with_index do |row, user_id|
                         prefs[user_id] = get_user_data(row)
                     end

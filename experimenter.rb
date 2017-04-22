@@ -4,16 +4,15 @@ require_relative 'test/test_helper'
 require_relative 'cross_validation'
 require_relative 'benchmark'
 require_relative 'logger'
-require_relative 'percent_printer'
 
 class Experimenter
     DUMMY_DATA = TestHelper::CRITICS
 
-    def initialize(logger: Logger.new,
+    def initialize(logger: Helper::Logger.new,
                    n_neighbours: [5, 25, 125, 625],
                    correlation_coefficient_factory_creator: Proc.new { |prefs| CorrelationCoefficientFactory.new(prefs) },
-                   recommendation_system_factory_creator: Proc.new do |prefs, correlation_coefficient_calculator, percent_printer|
-                       RecommendationSystemFactory.new(prefs, correlation_coefficient_calculator, percent_printer)
+                   recommendation_system_factory_creator: Proc.new do |prefs, correlation_coefficient_calculator|
+                       RecommendationSystemFactory.new(prefs, correlation_coefficient_calculator)
                    end)
         @logger = logger
         @n_neighbours = n_neighbours
@@ -71,7 +70,7 @@ class Experimenter
                     @logger.recommendation_system = object_name
                     @logger.puts_state_informations
 
-                    factory = @recommendation_system_factory_creator.call(fold, coefficient.call(fold), PercentPrinter.new(@logger))
+                    factory = @recommendation_system_factory_creator.call(fold, coefficient.call(fold))
                     recommendation_system = factory.public_send(factory_method)
                     recommendation_system 
                 end
