@@ -24,13 +24,6 @@ class DataSetModifier
         data_set_after_users_decimation = @prefs.to_a.sample((get_number_of_users(@prefs)/Math.sqrt(10)).to_i, random: Random.new(13))
         objects_to_keep = get_all_objects(@prefs).sample((get_number_of_objects(@prefs)/Math.sqrt(10)).to_i, random: Random.new(13))
 
-        big_data_set = {}
-        data_set_after_users_decimation.each do |user, rated_objects|
-            big_data_set[user] = rated_objects.select do |object_name, _|
-                objects_to_keep.include? object_name
-            end.to_h
-        end
-
         big_data_set = keep_only_selected_objects(data_set_after_users_decimation, objects_to_keep)
 
         puts "big data set:"
