@@ -1,7 +1,7 @@
 require 'httparty'
 require 'zip'
 
-# liczba ocen: 1000000
+# liczba ocen: 100000
 # liczba ocenianych obiektów: 9000
 # liczba użytkowników: 700
 # gęstość: 15.87%
