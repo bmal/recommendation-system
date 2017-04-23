@@ -152,9 +152,3 @@ class DataSetModifier
         data_set = remove_users_with_no_objects_rated(resultative_data_set)
     end
 end
-
-modifier = DataSetModifier.new(MovieLens1mReader.new.get_prefs)
-modifier.get_small_data_set
-modifier.get_big_data_set
-modifier.get_data_set_with_high_density
-modifier.get_data_set_with_low_density

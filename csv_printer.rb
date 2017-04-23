@@ -2,6 +2,7 @@ require_relative 'movie_lens_100k_reader'
 require_relative 'movie_lens_1m_reader'
 require_relative 'jester_reader'
 require_relative 'book_crossing_reader'
+require_relative 'data_set_modifier'
 require_relative 'experimenter'
 
 class CsvPrinter
@@ -38,8 +39,18 @@ class CsvPrinter
     end
 end
 
-e = Experimenter.new
-report = e.perform_tests_and_generate_report(number_of_folds: 10) { BookCrossingReader.new.get_prefs }#TestHelper::CRITICS }
-
 printer = CsvPrinter.new
-printer.print_report("test.csv", report)
+e = Experimenter.new
+modifier = DataSetModifier.new(MovieLens1mReader.new.get_prefs)
+
+report = e.perform_tests_and_generate_report(number_of_folds: 10) { modifier.get_small_data_set }
+printer.print_report("small_data_set.csv", report)
+
+report = e.perform_tests_and_generate_report(number_of_folds: 10) { modifier.get_big_data_set }
+printer.print_report("big_data_set.csv", report)
+
+report = e.perform_tests_and_generate_report(number_of_folds: 10) { modifier.get_data_set_with_high_density }
+printer.print_report("dense_data_set.csv", report)
+
+report = e.perform_tests_and_generate_report(number_of_folds: 10) { modifier.get_data_set_with_low_density }
+printer.print_report("rare_data_set.csv", report)
