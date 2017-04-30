@@ -27,18 +27,28 @@ class Analyzer
         result
     end
 
-    def get_mean_square_error
+    def get_prediction_variance
         result = {}
         @n_neighbours.each do |n|
             number_of_predictions = get_number_of_predictions(n)
             if number_of_predictions == 0
                 result[n] = "brak predykcji"
             else
-                result[n] = Math.sqrt(get_sum_of_square_errors(n) / number_of_predictions.to_f)
+                result[n] = get_sum_of_square_errors(n) / number_of_predictions.to_f
             end
         end
 
         result
+    end
+
+    def get_mean_square_error
+        get_prediction_variance.map do |neighbour, variance|
+            if variance.is_a? Numeric
+                [neighbour, Math.sqrt(variance)]
+            else
+                [neighbour, "brak predykcji"]
+            end
+        end.to_h
     end
 
     private

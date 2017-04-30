@@ -110,4 +110,11 @@ class AnalyzerTestSuite < MiniTest::Test
         assert_equal 1, mean_square_error.size
         assert_in_delta 1.832250763, mean_square_error[Analyzer::ALL_NEIGHBOURS.first], 0.000000001
     end
+
+    def test_that_the_prediction_variance_is_calculated_correctly
+        prediction_variance = @sut.get_prediction_variance
+
+        assert_equal 1, prediction_variance.size
+        assert_in_delta 3.357142857, prediction_variance[Analyzer::ALL_NEIGHBOURS.first], 0.000000001
+    end
 end

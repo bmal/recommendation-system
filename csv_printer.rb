@@ -19,7 +19,8 @@ class CsvPrinter
                         file.print "#{n},"
                         file.print "#{recommendation_system_report.get_average_times[:recommendation_generation_time][n]},"
                         file.print "#{recommendation_system_report.get_time_standard_deviations[:recommendation_generation_time][n]},"
-                        file.puts "#{recommendation_system_report.get_mean_square_error[n]}"
+                        file.print "#{recommendation_system_report.get_mean_square_error[n]}"
+                        file.puts "#{recommendation_system_report.get_prediction_variance[n]}"
                     end
                 end
             end
@@ -35,7 +36,8 @@ class CsvPrinter
             file.print "n-sąsiadów,"
             file.print "Średni czas generowania rekomendacji,"
             file.print "Odchylenie standardowe czasu generowania rekomendacji,"
-            file.puts "Błąd średniokwadratowy"
+            file.print "Błąd średniokwadratowy"
+            file.puts "Wariancja rekomendacji"
     end
 end
 
