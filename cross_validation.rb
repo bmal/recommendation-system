@@ -7,13 +7,12 @@ end
 class CrossValidation
     include Enumerable
 
-    def initialize(prefs, number_of_folds, seed: 124, testing_set_fraction: 0.3)
+    def initialize(prefs, number_of_folds, seed: 124)
         if number_of_folds < 1
             raise WrongNumberOfFolds.new("Number of folds must be greater than 0")
         elsif prefs.size >= 2*number_of_folds
             @number_of_folds = number_of_folds
             @seed = seed
-            @testing_set_fraction = testing_set_fraction
 
             chunks = split_into_equal_chunks(prefs)
             @traning_and_testing_sets_for_each_fold = split_chunks_into_testing_and_training_sets(chunks)
@@ -39,15 +38,13 @@ class CrossValidation
             chunks.pop
         end
 
-        chunks
+        chunks.map { |chunk| chunk.to_h }
     end
 
     def split_chunks_into_testing_and_training_sets(chunks)
-        chunks.map do |chunk|
-            testing_set_size = chunk.size * @testing_set_fraction
-            testing_set = chunk[0...testing_set_size].to_h
-            training_set = chunk[testing_set_size...chunk.size].to_h
-            {testing_set: testing_set, training_set: training_set}
+        chunks.map.with_index do |chunk|
+            training_set = chunks - [chunk]
+            {testing_set: chunk, training_set: training_set.inject(:merge)}
         end
     end
 end

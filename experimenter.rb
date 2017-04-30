@@ -20,7 +20,7 @@ class Experimenter
         @recommendation_system_factory_creator = recommendation_system_factory_creator
     end
 
-    def perform_tests_and_generate_report(number_of_folds: 10, &data_set_generator)
+    def perform_tests_and_generate_report(number_of_folds: 5, &data_set_generator)
         prefs = yield
         @logger.puts "data set created"
 
