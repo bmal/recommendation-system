@@ -33,10 +33,11 @@ class DataSetModifier
     end
 
     def get_data_set_with_low_density
-        sorted_objects_and_its_number_of_ratings = get_all_objects_sorted_by_rate_frequency(@prefs).to_a.reverse.to_h
+        data_set_after_users_decimation = @prefs.to_a.sample((get_number_of_users(@prefs)/Math.sqrt(10)).to_i, random: Random.new(13))
+        sorted_objects_and_its_number_of_ratings = get_all_objects_sorted_by_rate_frequency(data_set_after_users_decimation).to_a.reverse.to_h
         objects_to_keep = get_objects_having_10_percent_of_ratings(sorted_objects_and_its_number_of_ratings)
 
-        rare_data_set = keep_only_selected_objects(@prefs, objects_to_keep)
+        rare_data_set = keep_only_selected_objects(data_set_after_users_decimation, objects_to_keep)
 
         puts "rare data set:"
         print_stats(rare_data_set)
@@ -45,15 +46,20 @@ class DataSetModifier
     end
 
     def get_data_set_with_high_density
-        sorted_objects_and_its_number_of_ratings = get_all_objects_sorted_by_rate_frequency(@prefs)
+        data_set_after_users_decimation = get_data_set_with_n_most_active_users((get_number_of_users(@prefs)/Math.sqrt(10)).to_i)
+        sorted_objects_and_its_number_of_ratings = get_all_objects_sorted_by_rate_frequency(data_set_after_users_decimation)
         objects_to_keep = get_objects_having_10_percent_of_ratings(sorted_objects_and_its_number_of_ratings)
 
-        dense_data_set = keep_only_selected_objects(@prefs, objects_to_keep)
+        dense_data_set = keep_only_selected_objects(data_set_after_users_decimation, objects_to_keep)
 
         puts "dense data set:"
         print_stats(dense_data_set)
 
         dense_data_set
+    end
+
+    def get_data_set_with_n_most_active_users(n)
+        @prefs.sort_by { |user, ratings| ratings.size }.reverse.take(n).to_h
     end
 
     private
