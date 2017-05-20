@@ -20,7 +20,8 @@ class CsvPrinter
                         file.print "#{recommendation_system_report.get_average_times[:recommendation_generation_time][n]},"
                         file.print "#{recommendation_system_report.get_time_standard_deviations[:recommendation_generation_time][n]},"
                         file.print "#{recommendation_system_report.get_mean_square_error[n]},"
-                        file.puts "#{recommendation_system_report.get_prediction_variance[n]}"
+                        file.print "#{recommendation_system_report.get_prediction_variance[n]},"
+                        file.puts "#{recommendation_system_report.get_standard_deviation_of_mean_square_error[n]}"
                     end
                 end
             end
@@ -37,7 +38,8 @@ class CsvPrinter
             file.print "Średni czas generowania rekomendacji,"
             file.print "Odchylenie standardowe czasu generowania rekomendacji,"
             file.print "Błąd średniokwadratowy,"
-            file.puts "Wariancja rekomendacji"
+            file.print "Wariancja rekomendacji,"
+            file.puts "Odchylenie standardowe rekomendacji"
     end
 end
 
@@ -48,11 +50,11 @@ modifier = DataSetModifier.new(MovieLens1mReader.new.get_prefs)
 report = e.perform_tests_and_generate_report(number_of_folds: 5) { modifier.get_small_data_set }
 printer.print_report("small_data_set.csv", report)
 
-#report = e.perform_tests_and_generate_report(number_of_folds: 5) { modifier.get_big_data_set }
-#printer.print_report("big_data_set.csv", report)
-#
-#report = e.perform_tests_and_generate_report(number_of_folds: 5) { modifier.get_data_set_with_high_density }
-#printer.print_report("dense_data_set.csv", report)
+report = e.perform_tests_and_generate_report(number_of_folds: 5) { modifier.get_big_data_set }
+printer.print_report("big_data_set.csv", report)
+
+report = e.perform_tests_and_generate_report(number_of_folds: 5) { modifier.get_data_set_with_high_density }
+printer.print_report("dense_data_set.csv", report)
 #
 #report = e.perform_tests_and_generate_report(number_of_folds: 5) { modifier.get_data_set_with_low_density }
 #printer.print_report("rare_data_set.csv", report)

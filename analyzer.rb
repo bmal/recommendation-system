@@ -51,7 +51,50 @@ class Analyzer
         end.to_h
     end
 
+    def get_standard_deviation_of_mean_square_error
+        overall_mean_square_error = get_mean_square_error
+        number_of_folds = get_number_of_folds.to_f
+
+        @n_neighbours.map do |n|
+            numerator = get_mean_square_errors_per_folds_for_n_neighbours(n).inject(0) do |sum, (_, error_in_fold)|
+                sum + (error_in_fold - overall_mean_square_error[n])**2
+            end
+
+            [n, Math.sqrt(numerator / (number_of_folds - 1))]
+        end.to_h
+    end
+
     private
+    def get_mean_square_errors_per_folds_for_n_neighbours(n)
+        @results.map.with_index do |fold_result, fold_number|
+            [fold_number, get_mean_square_error_per_fold(fold_result[n])]
+        end.to_h
+    end
+
+    def get_mean_square_error_per_fold(fold_result)
+        number_of_recommendations = fold_result[:calculation_results].inject(0) do |fold_sum, (_, user_results)|
+            fold_sum + user_results[:filtered_rated_objects].inject(0) do |user_sum, (rated_object, _)|
+                if user_results[:recommendations][rated_object].nil?
+                    user_sum
+                else
+                    user_sum + 1
+                end
+            end
+        end
+
+        sum_of_errors = fold_result[:calculation_results].inject(0) do |fold_sum, (_, user_results)|
+            fold_sum + user_results[:filtered_rated_objects].inject(0) do |user_sum, (rated_object, rate)|
+                if user_results[:recommendations][rated_object].nil?
+                    user_sum
+                else
+                    user_sum + (user_results[:recommendations][rated_object] - rate)**2
+                end
+            end
+        end
+
+        Math.sqrt(sum_of_errors / number_of_recommendations.to_f)
+    end
+
     def get_average_system_generation_time
         sum_of_times = @results.inject(0) do |sum, fold_result|
             sum + fold_result[:system_generation_time]
@@ -122,5 +165,9 @@ class Analyzer
         @results.inject(0) do |sum, fold_result|
             sum + fold_result[n][:calculation_results].size
         end
+    end
+
+    def get_number_of_folds
+        @results.size
     end
 end
